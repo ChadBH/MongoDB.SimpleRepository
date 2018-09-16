@@ -10,7 +10,6 @@
     <PackageTags>MongoDB;Repository;.net core</PackageTags>
     <PackageLicenseUrl>https://github.com/JaseKirby/MongoDB.SimpleRepository/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/JaseKirby/MongoDB.SimpleRepository</RepositoryUrl>
-    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -18,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.4.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.7.0" />
   </ItemGroup>
 
 </Project>
