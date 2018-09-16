@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+﻿using System;
 using System.Linq;
 using Xunit;
 
@@ -6,123 +6,123 @@ namespace MongoDB.SimpleRepository.Tests
 {
     public class RepositoryTest
     {
-        private Repository<TestEntity> repo;
-        private string connectionString = "mongodb://localhost/test";
+        private readonly Repository<TestEntity, int> _repo;
+        private const string ConnectionString = "mongodb://localhost/test";
+
+        private static int Rand()
+        {
+            return new Random().Next(0, 1000);
+        }
+
+        private TestEntity Entity()
+        {
+            return new TestEntity(Rand());
+        }
+
 
         public RepositoryTest()
         {
-            MongoConnection.ConnectionString = connectionString;
-            repo = new Repository<TestEntity>();
+            MongoConnection.ConnectionString = ConnectionString;
+            _repo = new Repository<TestEntity, int>();
         }
 
         [Fact]
         public void InsertTest()
         {
-            var te = new TestEntity();
-            repo.Insert(te);
+            var te = Entity();
+            _repo.Insert(te);
             Assert.True(true);
-            repo.Delete(te);
+            _repo.Delete(te);
         }
 
         [Fact]
         public void DeleteTest()
         {
-            var id = ObjectId.GenerateNewId().ToString();
-            var te = new TestEntity();
-            te.Id = id;
-            repo.Insert(te);
+            var te = Entity();
+            _repo.Insert(te);
 
-            repo.Delete(te);
-            var deletedTE = repo.FindById(id);
-            Assert.Null(deletedTE);
+            _repo.Delete(te);
+            var deletedTe = _repo.FindById(te.Id);
+            Assert.Null(deletedTe);
         }
 
         [Fact]
         public void DeleteById()
         {
-            var id = ObjectId.GenerateNewId().ToString();
-            var te = new TestEntity();
-            te.Id = id;
-            repo.Insert(te);
+            var te = new TestEntity(Rand());
+            _repo.Insert(te);
 
-            repo.Delete(id);
-            var deletedTE = repo.FindById(id);
-            Assert.Null(deletedTE);
+            _repo.Delete(te.Id);
+            var deletedTe = _repo.FindById(te.Id);
+            Assert.Null(deletedTe);
         }
 
         [Fact]
         public void FindByIdTest()
         {
-            var id = ObjectId.GenerateNewId().ToString();
-            var newTE = new TestEntity();
-            newTE.Id = id;
-            repo.Insert(newTE);
+            var newTe = new TestEntity(Rand());
+            _repo.Insert(newTe);
 
-            var foundTE = repo.FindById(id);
-            Assert.NotNull(foundTE);
-            repo.Delete(newTE);
+            var foundTe = _repo.FindById(newTe.Id);
+            Assert.NotNull(foundTe);
+            _repo.Delete(newTe);
         }
 
         [Fact]
         public void UpdateTest()
         {
-            var id = ObjectId.GenerateNewId().ToString();
-            var te = new TestEntity();
-            te.Id = id;
+            var te = Entity();
 
             te.TestProperty = "VALUE";
-            repo.Insert(te);
-            string updateProp = "UPDATE VALUE";
+            _repo.Insert(te);
+            var updateProp = "UPDATE VALUE";
             te.TestProperty = updateProp;
-            repo.Update(te);
-            var updatedTE = repo.FindById(id);
-            Assert.Equal(updateProp, updatedTE.TestProperty);
-            repo.Delete(te);
+            _repo.Update(te);
+            var updatedTe = _repo.FindById(te.Id);
+            Assert.Equal(updateProp, updatedTe.TestProperty);
+            _repo.Delete(te);
         }
 
         [Fact]
         public void UpsertTest()
         {
-            var te = new TestEntity();
+            var te = Entity();
             te.TestProperty = "VALUE";
 
-            repo.UpSert(te);
-            var upsertedTE = repo.FindById(te.Id);
-            Assert.NotNull(upsertedTE);
+            _repo.UpSert(te);
+            var upsertedTe = _repo.FindById(te.Id);
+            Assert.NotNull(upsertedTe);
 
-            string upsertProp = "UPSERT VALUE";
-            upsertedTE.TestProperty = upsertProp;
-            repo.UpSert(upsertedTE);
-            upsertedTE = repo.FindById(te.Id);
-            Assert.Equal(upsertProp, upsertedTE.TestProperty);
-            repo.Delete(te);
+            var upsertProp = "UPSERT VALUE";
+            upsertedTe.TestProperty = upsertProp;
+            _repo.UpSert(upsertedTe);
+            upsertedTe = _repo.FindById(te.Id);
+            Assert.Equal(upsertProp, upsertedTe.TestProperty);
+            _repo.Delete(te);
         }
 
         [Fact]
         public void SearchTest()
         {
-            var id = ObjectId.GenerateNewId().ToString();
-            var te = new TestEntity();
-            te.Id = id;
+            var te = Entity();
             te.TestProperty = "VALUE";
-            repo.Insert(te);
+            _repo.Insert(te);
 
-            var searchResults = repo.Search(x => x.TestProperty.Contains("VAL")).ToList();
-            Assert.Equal(id, searchResults[0].Id);
-            repo.Delete(te);
+            var searchResults = _repo.Search(x => x.TestProperty.Contains("VAL")).ToList();
+            Assert.Equal(te.Id, searchResults[0].Id);
+            _repo.Delete(te);
         }
 
         [Fact]
         public void FindByNameTest()
         {
-            NamedRepository<NamedTestEntity> repo = new NamedRepository<NamedTestEntity>();
-            string name = "Bob";
-            var nte = new NamedTestEntity();
-            nte.Name = name;
+            var repo = new NamedRepository<NamedTestEntity, int>();
+            var name = "Bob";
+            var nte = new NamedTestEntity(Rand(), name);
             repo.Insert(nte);
 
-            var foundNTE = repo.FindByName(name);
-            Assert.NotNull(foundNTE);
+            var foundNte = repo.FindByName(name);
+            Assert.NotNull(foundNte);
             repo.Delete(nte);
         }
 

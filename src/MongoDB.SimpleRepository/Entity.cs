@@ -1,12 +1,14 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace MongoDB.SimpleRepository
+﻿namespace MongoDB.SimpleRepository
 {
-    public abstract class Entity
+    public abstract class Entity<T>
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public T Id { get; set; }
+
+        protected Entity() { }
+
+        protected Entity(T id)
+        {
+            Id = id;
+        }
     }
 }

@@ -4,20 +4,20 @@ namespace MongoDB.SimpleRepository.Tests
 {
     public class ConnectionTest
     {
-        string connString = "mongodb://localhost/test";
+        private const string ConnString = "mongodb://localhost/test";
 
         [Fact]
         public void RepositoryFirstConstTest() 
         {
-            MongoConnection.ConnectionString = connString;
-            Repository<TestEntity> repo = new Repository<TestEntity>();
+            MongoConnection.ConnectionString = ConnString;
+            var repo = new Repository<TestEntity, int>();
             Assert.True(true);
         }
 
         [Fact]
         public void RepositorySecondConstTest()
         {
-            Repository<TestEntity> repo = new Repository<TestEntity>(connString);
+            var repo = new Repository<TestEntity, int>(ConnString);
             Assert.True(true);
         }
     }

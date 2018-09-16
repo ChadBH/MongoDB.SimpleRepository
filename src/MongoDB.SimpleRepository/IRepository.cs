@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace MongoDB.SimpleRepository
 {
-    public interface IRepository<TEntity> where TEntity : Entity
+    public interface IRepository<TEntity, TId> where TEntity : Entity<TId>
     {
         void Insert(TEntity entity);
         void Update(TEntity entity);
@@ -13,7 +13,7 @@ namespace MongoDB.SimpleRepository
         void Delete(TEntity entity);
         IEnumerable<TEntity> Search(Expression<Func<TEntity, bool>> predicate);
         IEnumerable<TEntity> GetAll();
-        TEntity FindById(string id);
+        TEntity FindById(TId id);
         IMongoCollection<TEntity> Collection();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace MongoDB.SimpleRepository
 {
-    public class NamedRepository<TEntity> : Repository<TEntity> where TEntity : NamedEntity
+    public class NamedRepository<TEntity, TId> : Repository<TEntity, TId> where TEntity : NamedEntity<TId>
     {
         public TEntity FindByName(string name)
         {
