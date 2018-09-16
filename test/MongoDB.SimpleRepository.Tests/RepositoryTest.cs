@@ -28,60 +28,60 @@ namespace MongoDB.SimpleRepository.Tests
         }
 
         [Fact]
-        public void InsertTest()
+        public async Task InsertTest()
         {
             var te = Entity();
-            _repo.Insert(te);
+            await _repo.InsertAsync(te);
             Assert.True(true);
-            _repo.Delete(te);
+            await _repo.DeleteAsync(te);
         }
 
         [Fact]
-        public void DeleteTest()
+        public async Task DeleteTest()
         {
             var te = Entity();
-            _repo.Insert(te);
+            await _repo.InsertAsync(te);
 
-            _repo.Delete(te);
-            var deletedTe = _repo.FindById(te.Id);
+            await _repo.DeleteAsync(te);
+            var deletedTe = await _repo.FindByIdAsync(te.Id);
             Assert.Null(deletedTe);
         }
 
         [Fact]
-        public void DeleteById()
+        public async Task DeleteById()
         {
             var te = new TestEntity(Rand());
-            _repo.Insert(te);
+            await _repo.InsertAsync(te);
 
-            _repo.Delete(te.Id);
-            var deletedTe = _repo.FindById(te.Id);
+            await _repo.Delete(te.Id);
+            var deletedTe = await _repo.FindByIdAsync(te.Id);
             Assert.Null(deletedTe);
         }
 
         [Fact]
-        public void FindByIdTest()
+        public async Task FindByIdTest()
         {
             var newTe = new TestEntity(Rand());
-            _repo.Insert(newTe);
+            await _repo.InsertAsync(newTe);
 
-            var foundTe = _repo.FindById(newTe.Id);
+            var foundTe = _repo.FindByIdAsync(newTe.Id);
             Assert.NotNull(foundTe);
-            _repo.Delete(newTe);
+            await _repo.DeleteAsync(newTe);
         }
 
         [Fact]
-        public void UpdateTest()
+        public async Task UpdateTest()
         {
             var te = Entity();
 
             te.TestProperty = "VALUE";
-            _repo.Insert(te);
+            await _repo.InsertAsync(te);
             var updateProp = "UPDATE VALUE";
             te.TestProperty = updateProp;
-            _repo.Update(te);
-            var updatedTe = _repo.FindById(te.Id);
+            await _repo.UpdateAsync(te);
+            var updatedTe = await _repo.FindByIdAsync(te.Id);
             Assert.Equal(updateProp, updatedTe.TestProperty);
-            _repo.Delete(te);
+            await _repo.DeleteAsync(te);
         }
 
         [Fact]
@@ -90,41 +90,41 @@ namespace MongoDB.SimpleRepository.Tests
             var te = Entity();
             te.TestProperty = "VALUE";
 
-            await _repo.Upsert(te);
-            var upsertedTe = _repo.FindById(te.Id);
+            await _repo.UpsertAsync(te);
+            var upsertedTe = await _repo.FindByIdAsync(te.Id);
             Assert.NotNull(upsertedTe);
 
             var upsertProp = "UPSERT VALUE";
             upsertedTe.TestProperty = upsertProp;
-            await _repo.Upsert(upsertedTe);
-            upsertedTe = _repo.FindById(te.Id);
+            await _repo.UpsertAsync(upsertedTe);
+            upsertedTe = await _repo.FindByIdAsync(te.Id);
             Assert.Equal(upsertProp, upsertedTe.TestProperty);
-            _repo.Delete(te);
+            await _repo.DeleteAsync(te);
         }
 
         [Fact]
-        public void SearchTest()
+        public async Task SearchTest()
         {
             var te = Entity();
             te.TestProperty = "VALUE";
-            _repo.Insert(te);
+            await _repo.InsertAsync(te);
 
             var searchResults = _repo.Search(x => x.TestProperty.Contains("VAL")).ToList();
             Assert.Equal(te.Id, searchResults[0].Id);
-            _repo.Delete(te);
+            await _repo.DeleteAsync(te);
         }
 
         [Fact]
-        public void FindByNameTest()
+        public async Task FindByNameTest()
         {
             var repo = new NamedRepository<NamedTestEntity, int>();
             var name = "Bob";
             var nte = new NamedTestEntity(Rand(), name);
-            repo.Insert(nte);
+            await repo.InsertAsync(nte);
 
             var foundNte = repo.FindByName(name);
             Assert.NotNull(foundNte);
-            repo.Delete(nte);
+            await repo.DeleteAsync(nte);
         }
 
     }

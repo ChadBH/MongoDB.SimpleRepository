@@ -7,7 +7,7 @@ namespace MongoDB.SimpleRepository
         public TEntity FindByName(string name)
         {
             var filter = Builders<TEntity>.Filter.Eq("Name", name);
-            return collection.Find(filter).FirstOrDefault();
+            return Collection.Find(filter).FirstOrDefault();
         }
 
     }

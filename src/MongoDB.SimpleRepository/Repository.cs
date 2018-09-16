@@ -11,112 +11,93 @@ namespace MongoDB.SimpleRepository
     public class Repository<TEntity, TId> : IRepository<TEntity, TId> where TEntity : Entity<TId>
     {
         protected IMongoDatabase Db;
-        protected IMongoCollection<TEntity> collection;
+        protected IMongoCollection<TEntity> Collection;
 
-        public Repository()
-        {
-            var mongoUrl = new MongoUrl(MongoConnection.ConnectionString);
-            var client = new MongoClient(mongoUrl);
-            Db = client.GetDatabase(mongoUrl.DatabaseName);
-            SetCollection();
-        }
+        public Repository():this(MongoConnection.ConnectionString) {}
 
         public Repository(string connectionString, string collectionName = null)
         {
             var mongoUrl = new MongoUrl(connectionString);
             var client = new MongoClient(mongoUrl);
             Db = client.GetDatabase(mongoUrl.DatabaseName);
-            SetCollection(collectionName);
-        }
 
-        private void SetCollection(string name = null)
-        {
-            if(name == null)
+            if(string.IsNullOrWhiteSpace(collectionName))
             {
-                name = typeof(TEntity).Name;
+                collectionName = typeof(TEntity).Name;
             }
 
-            if (!CollectionExistsAsync(name).Result)
-            {
-                Db.CreateCollection(name);
-            }
-
-            collection = Db.GetCollection<TEntity>(name);
-
-        }
-        public async Task<bool> CollectionExistsAsync(string collectionName)
-        {
             var filter = new BsonDocument("name", collectionName);
 
-            var collections = await Db.ListCollectionsAsync(
+            var collections = Db.ListCollections(
                 new ListCollectionsOptions {
                     Filter = filter
                 }
             );
 
-            return await collections.AnyAsync();
+            if (!collections.Any())
+            {
+                Db.CreateCollection(collectionName);
+            }
+
+            Collection = Db.GetCollection<TEntity>(collectionName);
+
         }
 
-
-        public IMongoCollection<TEntity> Collection()
+        public async Task InsertAsync(TEntity entity)
         {
-            return collection;
+            await Collection.InsertOneAsync(entity);
         }
 
-        public async Task Insert(TEntity entity)
-        {
-            await collection.InsertOneAsync(entity);
-        }
-
-        public async Task<uint> Update(TEntity entity)
+        public async Task<uint> UpdateAsync(TEntity entity)
         {
             var filter = Builders<TEntity>.Filter.Eq("_id", entity.Id);
-            var result = await collection.ReplaceOneAsync(filter, entity);
+            var result = await Collection.ReplaceOneAsync(filter, entity);
             return (uint) result.ModifiedCount;
         }
 
-        public async Task Upsert(TEntity entity)
+        public async Task UpsertAsync(TEntity entity)
         {
             if (Equals(entity.Id, default(TId)))
             {
-                await Insert(entity);
+                await InsertAsync(entity);
             }
             else
             {
-                var updated = await Update(entity);
+                var updated = await UpdateAsync(entity);
                 if (updated == 0)
                 {
-                    await Insert(entity);
+                    await InsertAsync(entity);
                 }
             }
         }
 
-        public void Delete(TEntity entity)
+        public async Task DeleteAsync(TEntity entity)
         {
             var filter = Builders<TEntity>.Filter.Eq("_id", entity.Id);
-            collection.DeleteOne(filter);
+            await Collection.DeleteOneAsync(filter);
         }
 
-        public void Delete(TId id)
+        public async Task Delete(TId id)
         {
             var filter = Builders<TEntity>.Filter.Eq("_id", id);
-            collection.DeleteOne(filter);
+            await Collection.DeleteOneAsync(filter);
         }
 
         public IEnumerable<TEntity> Search(Expression<Func<TEntity, bool>> predicate)
         {
-            return collection.AsQueryable().Where(predicate.Compile());
+            return Collection.AsQueryable().Where(predicate.Compile());
         }
 
         public IEnumerable<TEntity> GetAll()
         {
-            return collection.AsQueryable();
+            return Collection.AsQueryable();
         }
 
-        public TEntity FindById(TId id)
+        public async Task<TEntity> FindByIdAsync(TId id)
         {
             var filter = Builders<TEntity>.Filter.Eq("_id", id);
-            return collection.Find(filter).FirstOrDefault();
+            var result = await Collection.FindAsync(filter);
+            return result.FirstOrDefault();
         }
     }
 }
