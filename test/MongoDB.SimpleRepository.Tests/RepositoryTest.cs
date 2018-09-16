@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace MongoDB.SimpleRepository.Tests
@@ -84,18 +85,18 @@ namespace MongoDB.SimpleRepository.Tests
         }
 
         [Fact]
-        public void UpsertTest()
+        public async Task UpsertTest()
         {
             var te = Entity();
             te.TestProperty = "VALUE";
 
-            _repo.UpSert(te);
+            await _repo.Upsert(te);
             var upsertedTe = _repo.FindById(te.Id);
             Assert.NotNull(upsertedTe);
 
             var upsertProp = "UPSERT VALUE";
             upsertedTe.TestProperty = upsertProp;
-            _repo.UpSert(upsertedTe);
+            await _repo.Upsert(upsertedTe);
             upsertedTe = _repo.FindById(te.Id);
             Assert.Equal(upsertProp, upsertedTe.TestProperty);
             _repo.Delete(te);

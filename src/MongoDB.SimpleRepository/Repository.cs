@@ -1,8 +1,10 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace MongoDB.SimpleRepository
 {
@@ -19,46 +21,74 @@ namespace MongoDB.SimpleRepository
             SetCollection();
         }
 
-        public Repository(string connectionString)
+        public Repository(string connectionString, string collectionName = null)
         {
             var mongoUrl = new MongoUrl(connectionString);
             var client = new MongoClient(mongoUrl);
             Db = client.GetDatabase(mongoUrl.DatabaseName);
-            SetCollection();
+            SetCollection(collectionName);
         }
 
-        private void SetCollection()
+        private void SetCollection(string name = null)
         {
-            collection = Db.GetCollection<TEntity>(typeof(TEntity).Name);
+            if(name == null)
+            {
+                name = typeof(TEntity).Name;
+            }
+
+            if (!CollectionExistsAsync(name).Result)
+            {
+                Db.CreateCollection(name);
+            }
+
+            collection = Db.GetCollection<TEntity>(name);
+
+        }
+        public async Task<bool> CollectionExistsAsync(string collectionName)
+        {
+            var filter = new BsonDocument("name", collectionName);
+
+            var collections = await Db.ListCollectionsAsync(
+                new ListCollectionsOptions {
+                    Filter = filter
+                }
+            );
+
+            return await collections.AnyAsync();
         }
 
-        public void SetCollectionByName(string collectionName)
-        {
-            collection = Db.GetCollection<TEntity>(collectionName);
-        }
 
         public IMongoCollection<TEntity> Collection()
         {
             return collection;
         }
 
-        public void Insert(TEntity entity)
+        public async Task Insert(TEntity entity)
         {
-            collection.InsertOne(entity);
+            await collection.InsertOneAsync(entity);
         }
 
-        public void Update(TEntity entity)
+        public async Task<uint> Update(TEntity entity)
         {
             var filter = Builders<TEntity>.Filter.Eq("_id", entity.Id);
-            collection.ReplaceOne(filter, entity);
+            var result = await collection.ReplaceOneAsync(filter, entity);
+            return (uint) result.ModifiedCount;
         }
 
-        public void UpSert(TEntity entity)
+        public async Task Upsert(TEntity entity)
         {
-            if (entity.Id == null)
-                Insert(entity);
+            if (Equals(entity.Id, default(TId)))
+            {
+                await Insert(entity);
+            }
             else
-                Update(entity);
+            {
+                var updated = await Update(entity);
+                if (updated == 0)
+                {
+                    await Insert(entity);
+                }
+            }
         }
 
         public void Delete(TEntity entity)
