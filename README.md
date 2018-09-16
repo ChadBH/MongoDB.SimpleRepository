@@ -1,6 +1,8 @@
 # MongoDB.SimpleRepository
 
-CRUD repository pattern implementation for .net core MongoDB driver. It supports generic _id fields.
+CRUD repository pattern implementation for .net core MongoDB driver. It supports generic id fields.
+
+This is a fork of JaseKirby/MongoDB.SimpleRepository 
 
 ### Set Universal Connection String
 ```csharp
