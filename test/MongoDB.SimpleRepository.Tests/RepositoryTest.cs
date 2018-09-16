@@ -7,7 +7,15 @@ namespace MongoDB.SimpleRepository.Tests
     public class RepositoryTest
     {
         private readonly Repository<TestEntity, int> _repo;
-        private const string ConnectionString = "mongodb://localhost/test";
+
+        private string _connectionString;
+
+        public RepositoryTest()
+        {
+            _connectionString = Config.Settings["ConnectionString"];
+
+            _repo = new Repository<TestEntity, int>(_connectionString);
+        }
 
         private static int Rand()
         {
@@ -19,12 +27,6 @@ namespace MongoDB.SimpleRepository.Tests
             return new TestEntity(Rand());
         }
 
-
-        public RepositoryTest()
-        {
-            MongoConnection.ConnectionString = ConnectionString;
-            _repo = new Repository<TestEntity, int>();
-        }
 
         [Fact]
         public void InsertTest()
@@ -116,7 +118,7 @@ namespace MongoDB.SimpleRepository.Tests
         [Fact]
         public void FindByNameTest()
         {
-            var repo = new NamedRepository<NamedTestEntity, int>();
+            var repo = new NamedRepository<NamedTestEntity, int>(_connectionString);
             var name = "Bob";
             var nte = new NamedTestEntity(Rand(), name);
             repo.Insert(nte);

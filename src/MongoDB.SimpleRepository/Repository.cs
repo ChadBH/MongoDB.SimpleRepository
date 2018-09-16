@@ -11,14 +11,6 @@ namespace MongoDB.SimpleRepository
         protected IMongoDatabase Db;
         protected IMongoCollection<TEntity> collection;
 
-        public Repository()
-        {
-            var mongoUrl = new MongoUrl(MongoConnection.ConnectionString);
-            var client = new MongoClient(mongoUrl);
-            Db = client.GetDatabase(mongoUrl.DatabaseName);
-            SetCollection();
-        }
-
         public Repository(string connectionString)
         {
             var mongoUrl = new MongoUrl(connectionString);

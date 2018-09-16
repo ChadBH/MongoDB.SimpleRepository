@@ -4,20 +4,24 @@ namespace MongoDB.SimpleRepository.Tests
 {
     public class ConnectionTest
     {
-        private const string ConnString = "mongodb://localhost/test";
+        private readonly string _connectionString;
+
+        public ConnectionTest()
+        {
+            _connectionString = Config.Settings["ConnectionString"];
+        }
 
         [Fact]
         public void RepositoryFirstConstTest() 
         {
-            MongoConnection.ConnectionString = ConnString;
-            var repo = new Repository<TestEntity, int>();
+            var repo = new Repository<TestEntity, int>(_connectionString);
             Assert.True(true);
         }
 
         [Fact]
         public void RepositorySecondConstTest()
         {
-            var repo = new Repository<TestEntity, int>(ConnString);
+            var repo = new Repository<TestEntity, int>(_connectionString);
             Assert.True(true);
         }
     }

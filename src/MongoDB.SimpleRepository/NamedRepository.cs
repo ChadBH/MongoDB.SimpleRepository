@@ -4,6 +4,8 @@ namespace MongoDB.SimpleRepository
 {
     public class NamedRepository<TEntity, TId> : Repository<TEntity, TId> where TEntity : NamedEntity<TId>
     {
+        public NamedRepository(string connectionString):base(connectionString){}
+
         public TEntity FindByName(string name)
         {
             var filter = Builders<TEntity>.Filter.Eq("Name", name);
