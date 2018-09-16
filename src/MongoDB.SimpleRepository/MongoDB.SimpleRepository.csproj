@@ -4,7 +4,7 @@
     <Description>Simple CRUD repository pattern implementation for .net core MongoDB driver.</Description>
     <AssemblyTitle>MongoDB Simple Repository</AssemblyTitle>
     <Authors>Jase Kirby</Authors>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>MongoDB.SimpleRepository</AssemblyName>
     <PackageId>MongoDB.SimpleRepository</PackageId>
     <PackageTags>MongoDB;Repository;.net core</PackageTags>
