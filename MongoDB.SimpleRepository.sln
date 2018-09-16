@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CD701EBC-6396-4878-8488-26D30826CF7A}"
 EndProject
@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MongoDB.SimpleRepository", "src\MongoDB.SimpleRepository\MongoDB.SimpleRepository.xproj", "{225A6CD2-385B-4963-9500-B33D9DD6945B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MongoDB.SimpleRepository", "src\MongoDB.SimpleRepository\MongoDB.SimpleRepository.csproj", "{225A6CD2-385B-4963-9500-B33D9DD6945B}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MongoDB.SimpleRepository.Tests", "test\MongoDB.SimpleRepository.Tests\MongoDB.SimpleRepository.Tests.xproj", "{C1BE6580-CC3E-4BCD-9C61-CF9849641FA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MongoDB.SimpleRepository.Tests", "test\MongoDB.SimpleRepository.Tests\MongoDB.SimpleRepository.Tests.csproj", "{C1BE6580-CC3E-4BCD-9C61-CF9849641FA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,5 +34,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{225A6CD2-385B-4963-9500-B33D9DD6945B} = {CD701EBC-6396-4878-8488-26D30826CF7A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D8E44344-7C6A-4547-AA8D-8DCF78C77CA3}
 	EndGlobalSection
 EndGlobal

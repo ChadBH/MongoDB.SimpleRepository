@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Simple CRUD repository pattern implementation for .net core MongoDB driver.</Description>
+    <AssemblyTitle>MongoDB Simple Repository</AssemblyTitle>
+    <Authors>Jase Kirby</Authors>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <AssemblyName>MongoDB.SimpleRepository</AssemblyName>
+    <PackageId>MongoDB.SimpleRepository</PackageId>
+    <PackageTags>MongoDB;Repository;.net core</PackageTags>
+    <PackageLicenseUrl>https://github.com/JaseKirby/MongoDB.SimpleRepository/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/JaseKirby/MongoDB.SimpleRepository</RepositoryUrl>
+    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.4.1" />
+  </ItemGroup>
+
+</Project>
