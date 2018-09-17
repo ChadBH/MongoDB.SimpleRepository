@@ -1,4 +1,4 @@
-﻿namespace MongoDB.SimpleRepository
+﻿namespace MongoDB.SimpleRepository.Tests
 {
     public abstract class NamedEntity<TId> 
     {

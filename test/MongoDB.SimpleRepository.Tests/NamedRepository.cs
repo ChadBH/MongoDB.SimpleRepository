@@ -1,8 +1,8 @@
 ﻿using MongoDB.Driver;
 
-namespace MongoDB.SimpleRepository
+namespace MongoDB.SimpleRepository.Tests
 {
-    public class NamedRepository<TEntity, TId> : Repository<TEntity, TId> where TEntity : NamedEntity<TId>
+    public class NamedRepository<TEntity, TId> : Repository<TEntity, TId> where TEntity : Tests.NamedEntity<TId>
     {
         public TEntity FindByName(string name)
         {

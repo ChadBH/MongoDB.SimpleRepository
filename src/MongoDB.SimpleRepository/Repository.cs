@@ -9,20 +9,18 @@ using System.Threading.Tasks;
 
 namespace MongoDB.SimpleRepository
 {
-    public class Repository<TEntity, TId> : IRepository<TEntity, TId> 
+    public class Repository<TEntity, TId> : BaseRepository, IRepository<TEntity, TId> 
     {
-        protected static IMongoDatabase Db;
         protected static IMongoCollection<TEntity> Collection;
+
+        // ReSharper disable once StaticMemberInGenericType
         private static MemberInfo _idMemberInfo;
 
         public Repository(
             string connectionString,
             string collectionName = null,
             string idMemberName = null
-        ){
-            var mongoUrl = new MongoUrl(connectionString);
-            var client = new MongoClient(mongoUrl);
-            Db = client.GetDatabase(mongoUrl.DatabaseName);
+        ):base(connectionString){
 
             if (string.IsNullOrWhiteSpace(idMemberName))
             {
@@ -83,19 +81,19 @@ namespace MongoDB.SimpleRepository
 
         }
 
-        public async Task InsertAsync(TEntity entity)
+        public virtual async Task InsertAsync(TEntity entity)
         {
             await Collection.InsertOneAsync(entity);
         }
 
-        public async Task<uint> UpdateAsync(TEntity entity)
+        public virtual async Task<uint> UpdateAsync(TEntity entity)
         {
             var id = GetIdValue(entity);
             var result = await Collection.ReplaceOneAsync(Filter(id), entity);
             return (uint) result.ModifiedCount;
         }
 
-        public async Task UpsertAsync(TEntity entity)
+        public virtual async Task UpsertAsync(TEntity entity)
         {
             var id = GetIdValue(entity);
 
@@ -113,33 +111,33 @@ namespace MongoDB.SimpleRepository
             }
         }
 
-        public async Task DeleteAsync(TId id)
+        public virtual async Task DeleteAsync(TId id)
         {
             await Collection.DeleteOneAsync(Filter(id));
         }
 
-        public async Task Delete(TId id)
+        public virtual async Task Delete(TId id)
         {
             await Collection.DeleteOneAsync(Filter(id));
         }
 
-        public IEnumerable<TEntity> Search(Expression<Func<TEntity, bool>> predicate)
+        public virtual IEnumerable<TEntity> Search(Expression<Func<TEntity, bool>> predicate)
         {
             return Collection.AsQueryable().Where(predicate.Compile());
         }
 
-        public IEnumerable<TEntity> GetAll()
+        public virtual IEnumerable<TEntity> GetAll()
         {
             return Collection.AsQueryable();
         }
 
-        public async Task<TEntity> FindByIdAsync(TId id)
+        public virtual async Task<TEntity> FindByIdAsync(TId id)
         {
             var result = await Collection.FindAsync(Filter(id));
             return result.FirstOrDefault();
         }
 
-        public static Type GetType(MemberInfo memberInfo)
+        private static Type GetType(MemberInfo memberInfo)
         {
             switch (memberInfo.MemberType)
             {
@@ -152,7 +150,7 @@ namespace MongoDB.SimpleRepository
             }
         }
 
-        public static TId GetValue(MemberInfo memberInfo, TEntity forObject)
+        private static TId GetValue(MemberInfo memberInfo, TEntity forObject)
         {
             switch (memberInfo.MemberType)
             {
@@ -165,7 +163,7 @@ namespace MongoDB.SimpleRepository
             }
         }
 
-        public TId GetIdValue(TEntity forObject)
+        protected TId GetIdValue(TEntity forObject)
         {
             return GetValue(_idMemberInfo, forObject);
         }
@@ -184,7 +182,7 @@ namespace MongoDB.SimpleRepository
             return info;
         }
 
-        private static FilterDefinition<TEntity> Filter(TId id)
+        protected static FilterDefinition<TEntity> Filter(TId id)
         {
             return Builders<TEntity>.Filter.Eq("_id", id);
         }
