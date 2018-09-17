@@ -1,9 +1,13 @@
 ﻿namespace MongoDB.SimpleRepository.Tests
 {
-    public class TestEntity : Entity<int>
+    public class TestEntity
     {
+        public int Id { get; set; }
         public string TestProperty { get; set; }
 
-        public TestEntity(int id):base(id) { }
+        public TestEntity(int id)
+        {
+            Id = id;
+        }
     }
 }

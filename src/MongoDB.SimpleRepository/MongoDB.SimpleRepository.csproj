@@ -1,19 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>Simple CRUD repository pattern implementation for .net core MongoDB driver.</Description>
+    <Description>MongoDB repository implementation for .net core.</Description>
     <AssemblyTitle>MongoDB Simple Repository</AssemblyTitle>
-    <Authors>Jase Kirby</Authors>
+    <Authors>Chad Hedgcock</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>MongoDB.SimpleRepository</AssemblyName>
-    <PackageId>MongoDB.SimpleRepository</PackageId>
-    <PackageTags>MongoDB;Repository;.net core</PackageTags>
-    <PackageLicenseUrl>https://github.com/JaseKirby/MongoDB.SimpleRepository/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/JaseKirby/MongoDB.SimpleRepository</RepositoryUrl>
+    <PackageId>MongoDB.Repository.Core</PackageId>
+    <PackageTags>mongodb, repository, core, net</PackageTags>
+    <PackageLicenseUrl>https://github.com/ChadBH/MongoDB.SimpleRepository/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ChadBH/MongoDB.SimpleRepository</RepositoryUrl>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

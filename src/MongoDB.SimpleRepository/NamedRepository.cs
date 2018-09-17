@@ -10,5 +10,10 @@ namespace MongoDB.SimpleRepository
             return Collection.Find(filter).FirstOrDefault();
         }
 
+        public NamedRepository(
+            string connectionString, 
+            string collectionName = null, 
+            string idMemberName = null
+        ) : base(connectionString, collectionName, idMemberName) { }
     }
 }

@@ -1,11 +1,14 @@
 ﻿namespace MongoDB.SimpleRepository
 {
-    public abstract class NamedEntity<TId> : Entity<TId>
+    public abstract class NamedEntity<TId> 
     {
+        public TId Id { get; set; }
+
         public string Name { get; set; }
 
-        protected NamedEntity(TId id, string name) : base(id)
+        protected NamedEntity(TId id, string name)
         {
+            Id = id;
             Name = name;
         }
     }

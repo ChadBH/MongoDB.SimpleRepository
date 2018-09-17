@@ -15,7 +15,7 @@ namespace MongoDB.SimpleRepository.Tests
             return new Random().Next(0, 1000);
         }
 
-        private TestEntity Entity()
+        private static TestEntity Entity()
         {
             return new TestEntity(Rand());
         }
@@ -23,8 +23,7 @@ namespace MongoDB.SimpleRepository.Tests
 
         public RepositoryTest()
         {
-            MongoConnection.ConnectionString = ConnectionString;
-            _repo = new Repository<TestEntity, int>();
+            _repo = new Repository<TestEntity, int>(ConnectionString);
         }
 
         [Fact]
@@ -33,7 +32,7 @@ namespace MongoDB.SimpleRepository.Tests
             var te = Entity();
             await _repo.InsertAsync(te);
             Assert.True(true);
-            await _repo.DeleteAsync(te);
+            await _repo.DeleteAsync(te.Id);
         }
 
         [Fact]
@@ -42,7 +41,7 @@ namespace MongoDB.SimpleRepository.Tests
             var te = Entity();
             await _repo.InsertAsync(te);
 
-            await _repo.DeleteAsync(te);
+            await _repo.DeleteAsync(te.Id);
             var deletedTe = await _repo.FindByIdAsync(te.Id);
             Assert.Null(deletedTe);
         }
@@ -66,7 +65,7 @@ namespace MongoDB.SimpleRepository.Tests
 
             var foundTe = _repo.FindByIdAsync(newTe.Id);
             Assert.NotNull(foundTe);
-            await _repo.DeleteAsync(newTe);
+            await _repo.DeleteAsync(newTe.Id);
         }
 
         [Fact]
@@ -81,7 +80,7 @@ namespace MongoDB.SimpleRepository.Tests
             await _repo.UpdateAsync(te);
             var updatedTe = await _repo.FindByIdAsync(te.Id);
             Assert.Equal(updateProp, updatedTe.TestProperty);
-            await _repo.DeleteAsync(te);
+            await _repo.DeleteAsync(te.Id);
         }
 
         [Fact]
@@ -99,7 +98,7 @@ namespace MongoDB.SimpleRepository.Tests
             await _repo.UpsertAsync(upsertedTe);
             upsertedTe = await _repo.FindByIdAsync(te.Id);
             Assert.Equal(upsertProp, upsertedTe.TestProperty);
-            await _repo.DeleteAsync(te);
+            await _repo.DeleteAsync(te.Id);
         }
 
         [Fact]
@@ -111,21 +110,20 @@ namespace MongoDB.SimpleRepository.Tests
 
             var searchResults = _repo.Search(x => x.TestProperty.Contains("VAL")).ToList();
             Assert.Equal(te.Id, searchResults[0].Id);
-            await _repo.DeleteAsync(te);
+            await _repo.DeleteAsync(te.Id);
         }
 
         [Fact]
         public async Task FindByNameTest()
         {
-            var repo = new NamedRepository<NamedTestEntity, int>();
+            var repo = new NamedRepository<NamedTestEntity, int>(ConnectionString);
             var name = "Bob";
             var nte = new NamedTestEntity(Rand(), name);
             await repo.InsertAsync(nte);
 
             var foundNte = repo.FindByName(name);
             Assert.NotNull(foundNte);
-            await repo.DeleteAsync(nte);
+            await repo.DeleteAsync(nte.Id);
         }
-
     }
 }
