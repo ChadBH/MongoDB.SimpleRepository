@@ -111,14 +111,25 @@ namespace MongoDB.SimpleRepository
             }
         }
 
+        public virtual async Task UpsertAsync(IEnumerable<TEntity> entities)
+        {
+            var ids = entities.Select(GetIdValue);
+            var found = await Collection.FindAsync(FilterIn(ids));
+        }
+
+        public virtual async Task InsertAsync(IEnumerable<TEntity> entities)
+        {
+            await Collection.BulkWriteAsync(entities.Select(e => new InsertOneModel<TEntity>(e)));
+        }
+
         public virtual async Task DeleteAsync(TId id)
         {
             await Collection.DeleteOneAsync(Filter(id));
         }
 
-        public virtual async Task Delete(TId id)
+        public virtual async Task DeleteAsync(IEnumerable<TId> ids)
         {
-            await Collection.DeleteOneAsync(Filter(id));
+            await Collection.BulkWriteAsync(ids.Select(e => new DeleteOneModel<TEntity>(Filter(e))));
         }
 
         public virtual IEnumerable<TEntity> Search(Expression<Func<TEntity, bool>> predicate)
@@ -180,6 +191,11 @@ namespace MongoDB.SimpleRepository
             }
 
             return info;
+        }
+
+        protected static FilterDefinition<TEntity> FilterIn(IEnumerable<TId> ids)
+        {
+            return Builders<TEntity>.Filter.In("_id", ids);
         }
 
         protected static FilterDefinition<TEntity> Filter(TId id)
