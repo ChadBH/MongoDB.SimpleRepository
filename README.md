@@ -1,24 +1,17 @@
 # MongoDB.SimpleRepository
 
-CRUD repository pattern implementation for .net core MongoDB driver. It supports generic id fields.
+Repository implementation for .net core MongoDB driver. 
 
-This is a fork of JaseKirby/MongoDB.SimpleRepository 
+### Supports
+* Generic id fields, like Guid or int. ObjectId or BsonId are not required in your classes. Keep your POCO objects plain!
+* No id inheritance, either. Typically your model has to inherit an id from another class, creating a dependency back to the repository. Yuck!
+* Connection pooling. Takes advantage of MongoDb.Driver's support for thread-safe static database and collection references.
 
-### Set Universal Connection String
-```csharp
-    MongoConnection.ConnectionString = "mongodb://localhost/test";
-```
+### Nuget package MongoDB.Repository.Core`
 
-### Specify Entity Classes
-```csharp
-    public class YourClass : Entity
-    {
-        public string TestProperty { get; set; }
-    }
-```
 ### Create Generic Repository
 ```csharp
-    Repository<YourClass> repo = new Repository<YourClass>();
+    Repository<YourClass> repo = new Repository<YourClass, int>(connectionString);
     YourClass yourClass = new YourClass();
     yourClass.TestProperty = "Value";
     repo.Insert(yourClass);
@@ -26,13 +19,14 @@ This is a fork of JaseKirby/MongoDB.SimpleRepository
 
 ### Creating Your Own Repositories
 ```csharp
-    public abstract class NamedEntity : Entity
+    public abstract class NamedEntity
     {
+        public Guid Id {get; set;}
         public string Name { get; set; }
     }
 ```
 ```csharp
-    public class NamedRepository<TEntity> : Repository<TEntity> where TEntity : NamedEntity
+    public class NamedRepository<TEntity> : Repository<TEntity, Guid> where TEntity : NamedEntity
     {
         public TEntity FindByName(string name)
         {
