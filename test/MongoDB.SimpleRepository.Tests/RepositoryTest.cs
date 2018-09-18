@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Sdk;
 
 namespace MongoDB.SimpleRepository.Tests
 {
@@ -19,6 +19,14 @@ namespace MongoDB.SimpleRepository.Tests
         private static TestEntity Entity()
         {
             return new TestEntity(Rand());
+        }
+
+        private static List<TestEntity> Entities(int count = 10)
+        {
+            return Enumerable
+                .Range(0, count)
+                .Select(a => Entity())
+                .ToList();
         }
 
 
@@ -128,12 +136,9 @@ namespace MongoDB.SimpleRepository.Tests
         }
 
         [Fact]
-        public async Task AddMany()
+        public async Task AddDeleteMany()
         {
-            var inserts = Enumerable
-                .Range(0, 10)
-                .Select(a => Entity())
-                .ToList();
+            var inserts = Entities();
 
             await _repo.InsertAsync(inserts);
 
@@ -141,6 +146,14 @@ namespace MongoDB.SimpleRepository.Tests
             {
                 var found = await _repo.FindByIdAsync(insert.Id);
                 Assert.NotNull(found);
+            }
+
+            await _repo.DeleteAsync(inserts.Select(a => a.Id));
+
+            foreach (var insert in inserts)
+            {
+                var found = await _repo.FindByIdAsync(insert.Id);
+                Assert.Null(found);
             }
         }
     }
