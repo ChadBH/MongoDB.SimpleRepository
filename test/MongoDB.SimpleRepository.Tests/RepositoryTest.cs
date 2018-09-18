@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Sdk;
 
 namespace MongoDB.SimpleRepository.Tests
 {
@@ -52,7 +53,7 @@ namespace MongoDB.SimpleRepository.Tests
             var te = new TestEntity(Rand());
             await _repo.InsertAsync(te);
 
-            await _repo.Delete(te.Id);
+            await _repo.DeleteAsync(te.Id);
             var deletedTe = await _repo.FindByIdAsync(te.Id);
             Assert.Null(deletedTe);
         }
@@ -124,6 +125,23 @@ namespace MongoDB.SimpleRepository.Tests
             var foundNte = repo.FindByName(name);
             Assert.NotNull(foundNte);
             await repo.DeleteAsync(nte.Id);
+        }
+
+        [Fact]
+        public async Task AddMany()
+        {
+            var inserts = Enumerable
+                .Range(0, 10)
+                .Select(a => Entity())
+                .ToList();
+
+            await _repo.InsertAsync(inserts);
+
+            foreach (var insert in inserts)
+            {
+                var found = await _repo.FindByIdAsync(insert.Id);
+                Assert.NotNull(found);
+            }
         }
     }
 }

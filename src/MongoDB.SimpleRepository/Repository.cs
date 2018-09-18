@@ -111,12 +111,6 @@ namespace MongoDB.SimpleRepository
             }
         }
 
-        public virtual async Task UpsertAsync(IEnumerable<TEntity> entities)
-        {
-            var ids = entities.Select(GetIdValue);
-            var found = await Collection.FindAsync(FilterIn(ids));
-        }
-
         public virtual async Task InsertAsync(IEnumerable<TEntity> entities)
         {
             await Collection.BulkWriteAsync(entities.Select(e => new InsertOneModel<TEntity>(e)));
