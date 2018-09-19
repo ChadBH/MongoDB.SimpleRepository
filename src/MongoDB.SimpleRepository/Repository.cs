@@ -81,16 +81,68 @@ namespace MongoDB.SimpleRepository
 
         }
 
+        public virtual TEntity FindById(TId id)
+        {
+            return Collection.Find(Filter(id)).FirstOrDefault();
+        }
+
+        public virtual async Task<TEntity> FindByIdAsync(TId id)
+        {
+            var result = await Collection.FindAsync(Filter(id));
+            return result.FirstOrDefault();
+        }
+
+        public virtual void Insert(TEntity entity)
+        {
+            Collection.InsertOne(entity);
+        }
+
         public virtual async Task InsertAsync(TEntity entity)
         {
             await Collection.InsertOneAsync(entity);
         }
 
-        public virtual async Task<uint> UpdateAsync(TEntity entity)
+        public virtual void Insert(IEnumerable<TEntity> entities)
+        {
+            Collection.BulkWrite(entities.Select(e => new InsertOneModel<TEntity>(e)));
+        }
+
+        public virtual async Task InsertAsync(IEnumerable<TEntity> entities)
+        {
+            await Collection.BulkWriteAsync(entities.Select(e => new InsertOneModel<TEntity>(e)));
+        }
+
+        public void Update(TEntity entity)
         {
             var id = GetIdValue(entity);
-            var result = await Collection.ReplaceOneAsync(Filter(id), entity);
-            return (uint) result.ModifiedCount;
+            Collection.ReplaceOne(Filter(id), entity);
+        }
+
+        public virtual async Task UpdateAsync(TEntity entity)
+        {
+            var id = GetIdValue(entity);
+            await Collection.ReplaceOneAsync(Filter(id), entity);
+        }
+
+        public void Upsert(TEntity entity)
+        {
+            var id = GetIdValue(entity);
+            if (Equals(id, default(TId)))
+            {
+                Insert(entity);
+            }
+            else
+            {
+                var found = FindById(id);
+                if (found == null)
+                {
+                    Insert(entity);
+                }
+                else
+                {
+                    Update(entity);
+                }
+            }
         }
 
         public virtual async Task UpsertAsync(TEntity entity)
@@ -103,22 +155,31 @@ namespace MongoDB.SimpleRepository
             }
             else
             {
-                var updated = await UpdateAsync(entity);
-                if (updated == 0)
+                var found = await FindByIdAsync(id);
+                if (found == null)
                 {
                     await InsertAsync(entity);
+                }
+                else
+                {
+                    await UpdateAsync(entity);
                 }
             }
         }
 
-        public virtual async Task InsertAsync(IEnumerable<TEntity> entities)
+        public virtual void Delete(TId id)
         {
-            await Collection.BulkWriteAsync(entities.Select(e => new InsertOneModel<TEntity>(e)));
+            Collection.DeleteOne(Filter(id));
         }
 
         public virtual async Task DeleteAsync(TId id)
         {
             await Collection.DeleteOneAsync(Filter(id));
+        }
+
+        public virtual void Delete(IEnumerable<TId> ids)
+        {
+            Collection.BulkWrite(ids.Select(e => new DeleteOneModel<TEntity>(Filter(e))));
         }
 
         public virtual async Task DeleteAsync(IEnumerable<TId> ids)
@@ -134,12 +195,6 @@ namespace MongoDB.SimpleRepository
         public virtual IEnumerable<TEntity> GetAll()
         {
             return Collection.AsQueryable();
-        }
-
-        public virtual async Task<TEntity> FindByIdAsync(TId id)
-        {
-            var result = await Collection.FindAsync(Filter(id));
-            return result.FirstOrDefault();
         }
 
         private static Type GetType(MemberInfo memberInfo)
