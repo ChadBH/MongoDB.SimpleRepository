@@ -28,6 +28,9 @@ namespace MongoDB.SimpleRepository
         void Delete(IEnumerable<TId> ids);
         Task DeleteAsync(IEnumerable<TId> ids);
 
+        void Empty();
+        Task EmptyAsync();
+
         IEnumerable<TEntity> Search(Expression<Func<TEntity, bool>> predicate);
         IEnumerable<TEntity> GetAll();
     }

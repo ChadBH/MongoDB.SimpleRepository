@@ -205,6 +205,16 @@ namespace MongoDB.SimpleRepository
             return Collection.AsQueryable();
         }
 
+        public virtual void Empty()
+        {
+            Collection.DeleteMany(a => true);
+        }
+
+        public virtual async Task EmptyAsync()
+        {
+            await Collection.DeleteManyAsync(a => true);
+        }
+
         private static Type GetType(MemberInfo memberInfo)
         {
             switch (memberInfo.MemberType)

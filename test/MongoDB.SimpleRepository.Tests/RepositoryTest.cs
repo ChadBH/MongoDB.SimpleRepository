@@ -33,6 +33,7 @@ namespace MongoDB.SimpleRepository.Tests
         public RepositoryTest()
         {
             _repo = new Repository<TestEntity, int>(ConnectionString);
+            _repo.Empty();
         }
 
         [Fact]
