@@ -124,8 +124,10 @@ namespace MongoDB.SimpleRepository
             await Collection.ReplaceOneAsync(Filter(id), entity);
         }
 
-        public void Upsert(TEntity entity)
-        {
+        public void Upsert(
+            TEntity entity,
+            IEqualityComparer<TEntity> comparer = null
+        ){
             var id = GetIdValue(entity);
             if (Equals(id, default(TId)))
             {
@@ -140,13 +142,18 @@ namespace MongoDB.SimpleRepository
                 }
                 else
                 {
-                    Update(entity);
+                    if (comparer == null || !comparer.Equals(found, entity))
+                    {
+                        Update(entity);
+                    }
                 }
             }
         }
 
-        public virtual async Task UpsertAsync(TEntity entity)
-        {
+        public virtual async Task UpsertAsync(
+            TEntity entity, 
+            IEqualityComparer<TEntity> comparer = null
+        ){
             var id = GetIdValue(entity);
 
             if (Equals(id, default(TId)))
@@ -162,6 +169,7 @@ namespace MongoDB.SimpleRepository
                 }
                 else
                 {
+                    if(comparer == null || !comparer.Equals(found, entity))
                     await UpdateAsync(entity);
                 }
             }

@@ -19,8 +19,8 @@ namespace MongoDB.SimpleRepository
         void Update(TEntity entity);
         Task UpdateAsync(TEntity entity);
 
-        void Upsert(TEntity entity);
-        Task UpsertAsync(TEntity entity);
+        void Upsert(TEntity entity, IEqualityComparer<TEntity> comparer = null);
+        Task UpsertAsync(TEntity entity, IEqualityComparer<TEntity> comparer = null);
 
         void Delete(TId id);
         Task DeleteAsync(TId id);
