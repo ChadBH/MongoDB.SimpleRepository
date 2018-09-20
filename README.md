@@ -3,6 +3,10 @@
 
 Repository implementation for .net core MongoDB driver. 
 
+```
+Install-Package MongoDB.Repository.Core -Version 2.0.0 
+```
+
 ### Supports
 * Any type for id, like Guid or int. ObjectId or BsonId are not required in your classes. Keep your POCO objects plain!
 * Connection pooling. Takes advantage of MongoDb.Driver's support for thread-safe static database and collection references.
