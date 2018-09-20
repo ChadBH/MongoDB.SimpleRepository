@@ -1,4 +1,5 @@
 # MongoDB.SimpleRepository
+[![NuGet version (MongoDB.Repository.Core)](https://img.shields.io/nuget/v/MongoDB.Repository.Core.svg?style=flat-square)](https://www.nuget.org/packages/MongoDB.Repository.Core/)
 
 Repository implementation for .net core MongoDB driver. 
 
@@ -6,8 +7,6 @@ Repository implementation for .net core MongoDB driver.
 * Any type for id, like Guid or int. ObjectId or BsonId are not required in your classes. Keep your POCO objects plain!
 * Connection pooling. Takes advantage of MongoDb.Driver's support for thread-safe static database and collection references.
 * Bulk add or delete.
-
-### Nuget package MongoDB.Repository.Core
 
 ### Usage
 
