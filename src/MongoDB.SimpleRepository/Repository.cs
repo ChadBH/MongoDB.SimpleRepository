@@ -18,14 +18,10 @@ namespace MongoDB.SimpleRepository
 
         public Repository(
             string connectionString,
-            string collectionName = null,
-            string idMemberName = null
+            string collectionName = null
         ):base(connectionString){
 
-            if (string.IsNullOrWhiteSpace(idMemberName))
-            {
-                idMemberName = "Id";
-            }
+            const string idMemberName = "Id";
 
             _idMemberInfo = GetIdField(idMemberName);
 

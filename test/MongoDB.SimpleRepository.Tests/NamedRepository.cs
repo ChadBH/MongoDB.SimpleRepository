@@ -12,8 +12,7 @@ namespace MongoDB.SimpleRepository.Tests
 
         public NamedRepository(
             string connectionString, 
-            string collectionName = null, 
-            string idMemberName = null
-        ) : base(connectionString, collectionName, idMemberName) { }
+            string collectionName = null
+        ) : base(connectionString, collectionName) { }
     }
 }
