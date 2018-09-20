@@ -1,13 +1,12 @@
 # MongoDB.SimpleRepository
+[![NuGet version (MongoDB.Repository.Core)](https://img.shields.io/nuget/v/MongoDB.Repository.Core.svg?style=flat-square)](https://www.nuget.org/packages/MongoDB.Repository.Core/)
 
 Repository implementation for .net core MongoDB driver. 
 
 ### Supports
-* Generic id fields, like Guid or int. ObjectId or BsonId are not required in your classes. Keep your POCO objects plain!
+* Any type for id, like Guid or int. ObjectId or BsonId are not required in your classes. Keep your POCO objects plain!
 * Connection pooling. Takes advantage of MongoDb.Driver's support for thread-safe static database and collection references.
 * Bulk add or delete.
-
-### Nuget package MongoDB.Repository.Core`
 
 ### Usage
 
@@ -25,8 +24,31 @@ Repository implementation for .net core MongoDB driver.
     var repo = new Repository<Record, Guid>(connectionString);
 ```
 
-### Available methods
-FindByIdAsync
+### Examples
+FindById:
 ```csharp
     var record = await repo.FindByIdAsync(new Guid("134c24bf-e1c8-4ec9-bd7e-ebbe211ebb72"));
+```
+
+Upsert accepts an optional IEqualityComparer, which will test whether there are actually any changes between the record to upsert and the existing record. This can greatly improve speed, since it only writes when it needs to.
+
+```csharp
+    public class RecordComparer : IEqualityComparer<Record>
+    {
+        public bool Equals(Record x, Record y)
+        {
+            if (x == null && y == null) return true;
+            if (x == null || y == null) return false;
+
+            return x.Name == y.Name;
+        }
+
+        public int GetHashCode(Record obj)
+        {
+            return obj.Name?.GetHashCode() ?? 0;
+        }
+    }
+    
+    //Implementation
+    repo.Upsert(myRecord, new RecordComparer());
 ```
