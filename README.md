@@ -3,6 +3,10 @@
 
 Repository implementation for .net core MongoDB driver. 
 
+```
+Install-Package MongoDB.Repository.Core -Version 2.0.0 
+```
+
 ### Supports
 * Any type for id, like Guid or int. ObjectId or BsonId are not required in your classes. Keep your POCO objects plain!
 * Connection pooling. Takes advantage of MongoDb.Driver's support for thread-safe static database and collection references.
@@ -19,9 +23,15 @@ Repository implementation for .net core MongoDB driver.
     }
 ```
 
-2. Your repository. Takes two type parameters--the type of your record and the type of the Id--and then your connection string.
+2. Your repository takes two type parameters--the type of your record and the type of the Id--and then your connection string.
 ```csharp
     var repo = new Repository<Record, Guid>(connectionString);
+```
+
+You can optionally pass in the collection name, otherwise the type name will be used. The collection will be created if it doesn't already exist.
+
+```csharp
+    var repo = new Repository<Record, Guid>(connectionString, "Records");
 ```
 
 ### Examples
