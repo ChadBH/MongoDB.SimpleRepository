@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using MongoDB.SimpleRepository.Tests.Models;
+using Xunit;
 
 namespace MongoDB.SimpleRepository.Tests
 {
