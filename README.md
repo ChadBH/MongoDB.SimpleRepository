@@ -8,39 +8,31 @@ Install-Package MongoDB.Repository.Core -Version 2.0.0
 ```
 
 ### Supports
-* Any type for id, like Guid or int. ObjectId or BsonId are not required in your classes. Keep your POCO objects plain!
+* Any type for \_id, like Guid or int. ObjectId or BsonId are not required in your classes. Keep your POCO objects plain!
 * Connection pooling. Takes advantage of MongoDb.Driver's support for thread-safe static database and collection references.
 * Bulk add or delete.
 
 ### Usage
 
-1. Name one of the fields "Id" in your model. It doesn't need to be an ObjectId or have Bson attributes. Any type except for a list or array will do as an Id. 
+1. Decide which field is going to be your "Id" field. It doesn't need to be an ObjectId or have Bson attributes. Any type except for a list or array will do as the \_id. It also does not have to be named "Id", and does not require attributes to designate it as such. Your models can be true POCO classes with no reference to MongoDB.Driver!
 ```csharp
     public class Record
     {
-        public Guid Id {get; set;}
+        public Guid MyId {get; set;}
         public string Name { get; set; }
     }
 ```
-
-2. Your repository takes two type parameters--the type of your record and the type of the Id--and then your connection string.
+2. Your repository expects two type parameters--the type of your record and the type of the \_id member. The arguments are the connection string, the name of the collection, and the name of the \_id member. All fields are optional. The connection string will default to your localhost mongod instance. The collection name defaults to the type name, and the default name it expects for the \_id member is "Id".
 ```csharp
-    var repo = new Repository<Record, Guid>(connectionString);
+    var repo = new Repository<Record, Guid>(connectionString, collectionName, idName);
 ```
-
-You can optionally pass in the collection name, otherwise the type name will be used. The collection will be created if it doesn't already exist.
-
-```csharp
-    var repo = new Repository<Record, Guid>(connectionString, "Records");
-```
-
 ### Examples
 FindById:
 ```csharp
     var record = await repo.FindByIdAsync(new Guid("134c24bf-e1c8-4ec9-bd7e-ebbe211ebb72"));
 ```
 
-Upsert accepts an optional IEqualityComparer, which will test whether there are actually any changes between the record to upsert and the existing record. This can greatly improve speed, since it only writes when it needs to.
+Upsert accepts an optional IEqualityComparer, which will test whether there are actually any changes between the record to upsert and the existing record. This can greatly improve speed, since it will only write the record back when it sees it has a change.
 
 ```csharp
     public class RecordComparer : IEqualityComparer<Record>
