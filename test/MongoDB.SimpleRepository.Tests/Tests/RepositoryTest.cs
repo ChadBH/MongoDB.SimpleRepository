@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.SimpleRepository.Tests.Models;
 using MongoDB.SimpleRepository.Tests.Repositories;
 using Xunit;
 
-namespace MongoDB.SimpleRepository.Tests
+namespace MongoDB.SimpleRepository.Tests.Tests
 {
-    public class RepositoryTest
+    public class RepositoryTest : TestBase
     {
         private readonly Repository<TestEntity, int> _repo;
-        private const string ConnectionString = "mongodb://localhost/test";
 
-        private static int Rand()
-        {
-            return new Random().Next(0, 1000);
-        }
 
         private static TestEntity Entity()
         {
@@ -28,13 +22,14 @@ namespace MongoDB.SimpleRepository.Tests
             return Enumerable
                 .Range(0, count)
                 .Select(a => Entity())
+                .GroupBy(a => a.Id)
+                .Select(a => a.First())
                 .ToList();
         }
 
-
         public RepositoryTest()
         {
-            _repo = new Repository<TestEntity, int>(ConnectionString);
+            _repo = new Repository<TestEntity, int>();
             _repo.Empty();
         }
 
@@ -128,7 +123,7 @@ namespace MongoDB.SimpleRepository.Tests
         [Fact]
         public async Task FindByNameTest()
         {
-            var repo = new NamedRepository<NamedTestEntity, int>(ConnectionString);
+            var repo = new NamedRepository<NamedTestEntity, int>();
             var name = "Bob";
             var nte = new NamedTestEntity(Rand(), name);
             await repo.InsertAsync(nte);

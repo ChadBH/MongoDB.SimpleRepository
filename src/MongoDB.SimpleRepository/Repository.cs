@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using MongoDB.Bson.Serialization;
 
 namespace MongoDB.SimpleRepository
 {
@@ -17,11 +18,10 @@ namespace MongoDB.SimpleRepository
         private static MemberInfo _idMemberInfo;
 
         public Repository(
-            string connectionString,
-            string collectionName = null
+            string connectionString = null,
+            string collectionName = null,
+            string idMemberName = "Id"
         ):base(connectionString){
-
-            const string idMemberName = "Id";
 
             _idMemberInfo = GetIdField(idMemberName);
 
@@ -33,6 +33,26 @@ namespace MongoDB.SimpleRepository
                     $"{typeName} does not have a field or property named {idMemberName}.",
                     nameof(idMemberName)
                 );
+            }
+
+            var entityType = typeof(TEntity);
+
+            if (idMemberName != "Id")
+            {
+                var typeIsRegistered = BsonClassMap.IsClassMapRegistered(entityType);
+
+                if (!typeIsRegistered)
+                {
+                    lock (RegisterLock)
+                    {
+                        BsonClassMap.RegisterClassMap<TEntity>(cm =>
+                        {
+                            cm.AutoMap();
+                            cm.SetIgnoreExtraElements(true);
+                            cm.MapIdMember(_idMemberInfo);
+                        });
+                    }
+                }
             }
 
             var idType = typeof(TId);
@@ -57,7 +77,7 @@ namespace MongoDB.SimpleRepository
 
             if(string.IsNullOrWhiteSpace(collectionName))
             {
-                collectionName = typeof(TEntity).Name;
+                collectionName = entityType.Name;
             }
 
             var filter = new BsonDocument("name", collectionName);
