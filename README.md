@@ -11,10 +11,11 @@ Install-Package MongoDB.Repository.Core -Version 2.0.0
 * Any type for \_id, like Guid or int. ObjectId or BsonId are not required in your classes. Keep your POCO objects plain!
 * Connection pooling. Takes advantage of MongoDb.Driver's support for thread-safe static database and collection references.
 * Bulk add or delete.
+* Asynchronous CRUD methods.
 
 ### Usage
 
-1. Decide which field is going to be your "Id" field. It doesn't need to be an ObjectId or have Bson attributes. Any type except for a list or array will do as the \_id. It also does not have to be named "Id", and does not require attributes to designate it as such. Your models can be true POCO classes with no reference to MongoDB.Driver!
+1. Decide which field is going to be your "Id" field. It doesn't need to be an ObjectId or have Bson attributes. Any type except for a list or array will do as the \_id. It also does not have to be named "Id", and does not require attributes to designate it as such. Your models can be true POCO classes without references to MongoDB.Driver!
 ```csharp
     public class Record
     {
